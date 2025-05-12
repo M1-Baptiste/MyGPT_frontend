@@ -7,7 +7,8 @@
     "dev": "vite --port 5173",
     "build": "vite build",
     "preview": "vite preview",
-    "e2e": "npx playwright test --headed --project=chromium"
+    "e2e": "npx playwright test --headed --project=chromium",
+    "e2e:ui": "npx playwright test --ui"
   },
   "dependencies": {
     "@tailwindcss/vite": "^4.1.6",

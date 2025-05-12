@@ -61,13 +61,6 @@
               </button>
             </div>
             <p v-else class="text-base whitespace-pre-wrap">{{ message.content }}</p>
-            <button
-                v-if="message.userMessage"
-                @click="editMessage(message)"
-                class="text-xs text-blue-500 hover:underline mt-2 block"
-            >
-              Edit
-            </button>
           </div>
 
           <!-- Avatar -->
@@ -95,14 +88,6 @@
               class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded shadow"
           >
             Send
-          </button>
-          <button
-              v-if="isEditing"
-              @click="cancelEdit"
-              type="button"
-              class="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded shadow"
-          >
-            Cancel
           </button>
         </div>
       </form>
@@ -193,11 +178,6 @@ export default {
         console.error('Error sending message:', error);
         alert('Failed to send message');
       }
-    },
-    editMessage(message) {
-      this.isEditing = true;
-      this.editingMessageId = message.id;
-      this.newMessage = message.content;
     },
     cancelEdit() {
       this.isEditing = false;
