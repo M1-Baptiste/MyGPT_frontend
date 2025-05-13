@@ -110,6 +110,7 @@ export default {
       newMessage: '',
       isEditing: false,
       editingMessageId: null,
+      isColorExplosion: false, // Suivi de l'état de l'effet coloré
     };
   },
   computed: {
@@ -147,6 +148,15 @@ export default {
     },
     async sendMessage() {
       if (!this.newMessage.trim()) return;
+
+      // Déclenche l'effet si la conversation est "WTF" et le message est "J'adore ce cour"
+      if (
+          this.conversation?.title.toLowerCase() === 'wtf' &&
+          this.newMessage.trim() === "J'adore ce cour"
+      ) {
+        this.triggerColorExplosion();
+      }
+
       try {
         const endpoint = this.isEditing
             ? `/conversations/${this.conversationId}/messages/${this.editingMessageId}`
@@ -158,14 +168,11 @@ export default {
           const index = this.messages.findIndex((m) => m.id === this.editingMessageId);
           this.messages[index] = response.data;
         } else {
-          // Le backend retourne maintenant une liste de messages [userMessage, aiMessage]
-          // Ajouter tous les messages reçus à la liste des messages
           if (Array.isArray(response.data)) {
-            response.data.forEach(message => {
+            response.data.forEach((message) => {
               this.messages.push(message);
             });
           } else {
-            // Fallback au cas où le backend retournerait un seul message
             this.messages.push(response.data);
           }
         }
@@ -218,6 +225,30 @@ export default {
       localStorage.removeItem('token');
       this.$router.push('/login');
     },
+    triggerColorExplosion() {
+      this.isColorExplosion = true;
+
+      // Applique l'effet à la navbar, au fond, et aux messages
+      const nav = document.querySelector('nav');
+      const mainDiv = document.querySelector('.min-h-screen');
+      const messageBubbles = document.querySelectorAll('.max-w-3xl');
+
+      nav.classList.add('color-explosion');
+      mainDiv.classList.add('color-explosion');
+      messageBubbles.forEach((bubble) => {
+        bubble.classList.add('color-explosion', 'message-bounce');
+      });
+
+      // Arrête l'effet après 10 secondes
+      setTimeout(() => {
+        this.isColorExplosion = false;
+        nav.classList.remove('color-explosion');
+        mainDiv.classList.remove('color-explosion');
+        messageBubbles.forEach((bubble) => {
+          bubble.classList.remove('color-explosion', 'message-bounce');
+        });
+      }, 10000);
+    },
   },
   created() {
     this.fetchConversation();
@@ -228,3 +259,50 @@ export default {
   },
 };
 </script>
+
+<style scoped>
+.color-explosion {
+  animation: colorParty 0.5s infinite alternate;
+}
+
+@keyframes colorParty {
+  0% {
+    background-color: #f87171; /* Rouge */
+    color: #ffffff;
+    transform: scale(1);
+  }
+  25% {
+    background-color: #60a5fa; /* Bleu */
+    color: #000000;
+    transform: scale(1.05);
+  }
+  50% {
+    background-color: #facc15; /* Jaune */
+    color: #ffffff;
+    transform: scale(1);
+  }
+  75% {
+    background-color: #4ade80; /* Vert */
+    color: #000000;
+    transform: scale(1.05);
+  }
+  100% {
+    background-color: #a78bfa; /* Violet */
+    color: #ffffff;
+    transform: scale(1);
+  }
+}
+
+.message-bounce {
+  animation: bounce 0.3s ease-in-out infinite;
+}
+
+@keyframes bounce {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+</style>
