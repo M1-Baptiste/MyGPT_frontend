@@ -247,7 +247,7 @@ export default {
         messageBubbles.forEach((bubble) => {
           bubble.classList.remove('color-explosion', 'message-bounce');
         });
-      }, 10000);
+      }, 5000);
     },
   },
   created() {
